@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cookie Consent Banner</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Inter", "Segoe UI", sans-serif; background: #f3f4f6; }
+
+    #cookie-banner {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #111827;
+      color: #d1d5db;
+      padding: 16px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      z-index: 9999;
+      box-shadow: 0 -2px 16px rgba(0,0,0,0.3);
+      animation: slideUp 0.4s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+
+    #cookie-banner p { font-size: 14px; line-height: 1.6; flex: 1; min-width: 260px; }
+    #cookie-banner a { color: #60a5fa; text-decoration: underline; }
+
+    .cookie-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-accept { background: #2563eb; color: #fff; }
+    .btn-decline { background: transparent; color: #9ca3af; border: 1px solid #4b5563; }
+    .btn-settings { background: transparent; color: #9ca3af; border: 1px solid #4b5563; }
+  </style>
+</head>
+<body>
+
+<!-- Preview placeholder -->
+<div style="padding:60px 24px;text-align:center;color:#6b7280;">
+  <p style="font-size:18px;">Your website content goes here.</p>
+</div>
+
+<!-- Cookie Banner -->
+<div id="cookie-banner">
+  <p>
+    🍪 We use cookies to personalise content, analyse traffic, and improve your experience.
+    Read our <a href="/privacy">Privacy Policy</a> and <a href="/cookies">Cookie Policy</a>.
+  </p>
+  <div class="cookie-actions">
+    <button class="btn btn-settings" onclick="openSettings()">Cookie Settings</button>
+    <button class="btn btn-decline" onclick="declineCookies()">Decline</button>
+    <button class="btn btn-accept" onclick="acceptCookies()">Accept All</button>
+  </div>
+</div>
+
+<script>
+  function acceptCookies() {
+    localStorage.setItem("cookie_consent", JSON.stringify({ analytics: true, marketing: true, ts: Date.now() }));
+    hideBanner();
+  }
+
+  function declineCookies() {
+    localStorage.setItem("cookie_consent", JSON.stringify({ analytics: false, marketing: false, ts: Date.now() }));
+    hideBanner();
+  }
+
+  function openSettings() {
+    alert("Open your cookie preferences modal here.");
+  }
+
+  function hideBanner() {
+    document.getElementById("cookie-banner").style.display = "none";
+  }
+
+  // Auto-hide if already consented
+  window.addEventListener("DOMContentLoaded", () => {
+    const consent = localStorage.getItem("cookie_consent");
+    if (consent) hideBanner();
+  });
+</script>
+</body>
+</html>

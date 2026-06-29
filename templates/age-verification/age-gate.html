@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Age Verification</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      background: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    #age-gate {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      padding: 44px 36px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      color: #f1f5f9;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .badge { font-size: 56px; margin-bottom: 14px; line-height: 1; }
+    h1 { font-size: 25px; font-weight: 800; margin-bottom: 10px; }
+    p.lead { color: #94a3b8; font-size: 15px; line-height: 1.6; margin-bottom: 24px; }
+
+    .dob { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
+    .dob select {
+      flex: 1;
+      padding: 12px 8px;
+      border-radius: 10px;
+      background: #0f172a;
+      color: #f1f5f9;
+      border: 1px solid #334155;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .dob select:focus, .btn-confirm:focus { outline: 2px solid #818cf8; outline-offset: 2px; }
+
+    .error { color: #f87171; font-size: 13px; min-height: 18px; margin-bottom: 14px; font-weight: 600; }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.1s, opacity 0.2s;
+      margin-bottom: 12px;
+    }
+    .btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+    .btn-confirm { background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff; }
+    .btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-deny { background: #1e293b; color: #64748b; border: 1px solid #334155; }
+
+    .disclaimer { font-size: 12px; color: #475569; margin-top: 20px; line-height: 1.5; }
+    a { color: #60a5fa; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<main id="age-gate" role="dialog" aria-modal="true" aria-labelledby="ag-title" aria-describedby="ag-desc">
+  <div class="badge" aria-hidden="true">🔞</div>
+  <h1 id="ag-title">Age Verification Required</h1>
+  <p class="lead" id="ag-desc">
+    This website contains content intended for adults only. You must be
+    <strong>18 years of age or older</strong> to enter. Please enter your date of birth.
+  </p>
+
+  <div class="dob">
+    <select id="day" aria-label="Day of birth"><option value="">Day</option></select>
+    <select id="month" aria-label="Month of birth"><option value="">Month</option></select>
+    <select id="year" aria-label="Year of birth"><option value="">Year</option></select>
+  </div>
+
+  <p class="error" id="error" role="alert" aria-live="assertive"></p>
+
+  <button class="btn btn-confirm" id="confirm" disabled>Enter Site</button>
+  <button class="btn btn-deny" id="deny">I am under 18 — Exit</button>
+
+  <p class="disclaimer">
+    By entering, you confirm the date above is accurate and you are of legal age, and agree to our
+    <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.
+  </p>
+</main>
+
+<script>
+  (function () {
+    // ── Configuration ───────────────────────────────────────────────
+    var MIN_AGE     = 18;                          // minimum age to enter
+    var REDIRECT    = "https://www.google.com";    // where denied/underage visitors go
+    var ENTRY_URL   = "/home";                     // where verified visitors go
+    var STORAGE_KEY = "age_verified";
+
+    // Skip the gate if already verified this session.
+    try {
+      if (sessionStorage.getItem(STORAGE_KEY) === "true") {
+        window.location.href = ENTRY_URL;
+        return;
+      }
+    } catch (e) {}
+
+    var daySel  = document.getElementById("day");
+    var monSel  = document.getElementById("month");
+    var yearSel = document.getElementById("year");
+    var confirm = document.getElementById("confirm");
+    var errorEl = document.getElementById("error");
+    var months  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    for (var d = 1; d <= 31; d++) daySel.add(new Option(d, d));
+    for (var m = 0; m < 12; m++) monSel.add(new Option(months[m], m + 1));
+    var nowYear = new Date().getFullYear();
+    for (var y = nowYear; y >= nowYear - 120; y--) yearSel.add(new Option(y, y));
+
+    function refresh() {
+      errorEl.textContent = "";
+      confirm.disabled = !(daySel.value && monSel.value && yearSel.value);
+    }
+    [daySel, monSel, yearSel].forEach(function (el) {
+      el.addEventListener("change", refresh);
+    });
+
+    function ageFrom(dob) {
+      var today = new Date();
+      var age = today.getFullYear() - dob.getFullYear();
+      var monthDiff = today.getMonth() - dob.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) age--;
+      return age;
+    }
+
+    confirm.addEventListener("click", function () {
+      var dd = +daySel.value, mm = +monSel.value, yy = +yearSel.value;
+      var dob = new Date(yy, mm - 1, dd);
+      // Reject impossible dates (e.g. 31 Feb rolls over) and future dates.
+      if (dob.getDate() !== dd || dob.getMonth() !== mm - 1 || dob > new Date()) {
+        errorEl.textContent = "Please enter a valid date of birth.";
+        return;
+      }
+      if (ageFrom(dob) >= MIN_AGE) {
+        try { sessionStorage.setItem(STORAGE_KEY, "true"); } catch (e) {}
+        window.location.href = ENTRY_URL;
+      } else {
+        window.location.href = REDIRECT;
+      }
+    });
+
+    document.getElementById("deny").addEventListener("click", function () {
+      window.location.href = REDIRECT;
+    });
+  })();
+</script>
+</body>
+</html>
