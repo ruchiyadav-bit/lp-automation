@@ -132,8 +132,7 @@ launch both at once.
 
 A default admin account is seeded on first run:
 
-- **Email:** `hello@kushalarora.in`
-- **Password:** `admin123`  *(change it after first login)*
+
 
 You can override these with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` in `backend/.env`.
 
