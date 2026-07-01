@@ -153,9 +153,9 @@ p{font-size:14px;color:#8a7259;line-height:1.75;margin-bottom:30px;max-width:360
   </div>
 </div>
 <script>
-function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -200,9 +200,9 @@ p{font-size:14px;color:#94a3b8;line-height:1.75;margin-bottom:28px}
   </div>
 </div>
 <script>
-function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -252,9 +252,9 @@ function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{docu
   </div>
 </div>
 <script>
-function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -302,9 +302,9 @@ p{font-size:14px;color:#57534e;line-height:1.75;margin-bottom:30px}
   </div>
 </div>
 <script>
-function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -349,9 +349,9 @@ p{font-size:14px;color:#64748b;line-height:1.75;margin-bottom:28px}
   </div>
 </div>
 <script>
-function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -401,9 +401,9 @@ p{font-size:13.5px;color:#94a3b8;line-height:1.7;margin-bottom:24px}
   </div>
 </div>
 <script>
-function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -450,9 +450,9 @@ function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{docu
   </div>
 </div>
 <script>
-function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -499,9 +499,9 @@ p{font-size:12.5px;color:#64748b;line-height:1.6;margin-bottom:18px}
   </div>
 </div>
 <script>
-function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -555,9 +555,9 @@ p a{color:#2563eb;text-decoration:underline}
   </div>
 </div>
 <script>
-function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -602,9 +602,9 @@ p a{color:#2563eb;text-decoration:underline}
   </div>
 </div>
 <script>
-function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -671,9 +671,9 @@ p{font-size:14px;color:#64748b;line-height:1.7;margin-bottom:26px}
   </div>
 </div>
 <script>
-function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
-function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){top.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
 }
@@ -712,8 +712,8 @@ function ageScript(confirmUrl, exitUrl) {
   var KEY=${JSON.stringify(AGE_STORAGE_KEY)},CU=${JSON.stringify(CU)},XU=${JSON.stringify(XU)};
   function reveal(){var g=document.getElementById('age-gate');if(g&&g.parentNode)g.parentNode.removeChild(g);document.documentElement.style.overflow='';document.body.style.overflow='';}
   try{if(sessionStorage.getItem(KEY)==='true')reveal();}catch(e){}
-  window.__ageConfirm=function(){try{sessionStorage.setItem(KEY,'true');}catch(e){}if(CU){window.location.href=CU;}else{reveal();}};
-  window.__ageExit=function(){window.location.href=XU;};
+  window.__ageConfirm=function(){try{sessionStorage.setItem(KEY,'true');}catch(e){}if(CU){top.location.href=CU;}else{reveal();}};
+  window.__ageExit=function(){top.location.href=XU;};
 })();</script>`;
 }
 
@@ -976,10 +976,10 @@ function nlScript(actionUrl, redirectUrl, closeUrl) {
   var RD=${JSON.stringify(redirectUrl || "")},AU=${JSON.stringify(actionUrl || "")},CL=${JSON.stringify(closeUrl || "")};
   var ov=document.getElementById('nl-overlay'),box=document.getElementById('nl-box'),x=document.getElementById('nl-close'),sk=document.getElementById('nl-skip'),f=document.getElementById('nl-form');
   function hide(){if(ov)ov.style.display='none';}
-  if(x)x.addEventListener('click',function(){if(CL){window.location.href=CL;}else{hide();}});
+  if(x)x.addEventListener('click',function(){if(CL){top.location.href=CL;}else{hide();}});
   if(sk)sk.addEventListener('click',hide);
   if(f)f.addEventListener('submit',function(e){e.preventDefault();var inp=f.querySelector('input[type=email],input[type=tel]'),em=inp?inp.value:'';
-    function done(){if(RD){window.location.href=RD;return;}if(box){box.innerHTML='';var w=document.createElement('div');w.setAttribute('style','padding:46px 32px;text-align:center');w.innerHTML='<div style="font-size:46px;color:#22c55e;margin-bottom:10px">&#10003;</div>';var h=document.createElement('h2');h.setAttribute('style','font-family:Poppins,sans-serif;margin:0 0 8px');h.textContent='Thank you!';var p=document.createElement('p');p.setAttribute('style','color:#64748b;margin:0');p.textContent='You are subscribed.';w.appendChild(h);w.appendChild(p);box.appendChild(w);}}
+    function done(){if(RD){top.location.href=RD;return;}if(box){box.innerHTML='';var w=document.createElement('div');w.setAttribute('style','padding:46px 32px;text-align:center');w.innerHTML='<div style="font-size:46px;color:#22c55e;margin-bottom:10px">&#10003;</div>';var h=document.createElement('h2');h.setAttribute('style','font-family:Poppins,sans-serif;margin:0 0 8px');h.textContent='Thank you!';var p=document.createElement('p');p.setAttribute('style','color:#64748b;margin:0');p.textContent='You are subscribed.';w.appendChild(h);w.appendChild(p);box.appendChild(w);}}
     if(AU){
       try{
         var ifr=document.createElement('iframe');ifr.name='nl_sink';ifr.style.display='none';document.body.appendChild(ifr);
