@@ -511,8 +511,22 @@ export default function CookiePage() {
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <input className="input text-sm" placeholder="Background image URL" value={form.bgImage}
-                            onChange={e => setForm({ ...form, bgImage: e.target.value })} />
+                          <div className="flex gap-2">
+                            <input className="input text-sm flex-1" placeholder="Background image URL" value={form.bgImage}
+                              onChange={e => setForm({ ...form, bgImage: e.target.value })} />
+                            <label className="btn-secondary text-sm cursor-pointer whitespace-nowrap flex items-center">
+                              <i className="fa-solid fa-upload mr-1" />Upload
+                              <input type="file" accept="image/*" className="hidden" onChange={e => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                const reader = new FileReader();
+                                reader.onload = () => setForm(f => ({ ...f, bgImage: reader.result }));
+                                reader.readAsDataURL(file);
+                                e.target.value = "";
+                              }} />
+                            </label>
+                          </div>
+                          {form.bgImage && <img src={form.bgImage} alt="bg preview" className="w-full h-24 object-cover rounded-lg border border-slate-200" />}
                           <div>
                             <label className="block text-xs text-slate-500 mb-1">Dark overlay opacity: {form.bgOpacity}</label>
                             <input type="range" min="0" max="0.9" step="0.05" value={form.bgOpacity}

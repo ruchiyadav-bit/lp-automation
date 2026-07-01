@@ -63,6 +63,11 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS settings (
+    key   TEXT PRIMARY KEY,
+    value TEXT
+  );
+
   -- Keep pages.updated_at fresh on every update (MySQL did this with
   -- ON UPDATE CURRENT_TIMESTAMP; SQLite needs a trigger).
   CREATE TRIGGER IF NOT EXISTS pages_set_updated_at

@@ -15,16 +15,12 @@ exports.capture = async (req, res) => {
       [page_id, cleanEmail]
     );
 
-    // If the page owner connected a Google Sheet (Apps Script webhook), append
+    // If the admin connected a Google Sheet (Apps Script webhook), append
     // the email to it. Fire-and-forget so it never blocks the visitor's submit.
     try {
-      const [owner] = await pool.query(
-        "SELECT p.sheet_webhook AS page_hook, u.sheet_webhook AS user_hook FROM pages p JOIN users u ON u.id = p.user_id WHERE p.id = ?",
-        [page_id]
-      );
-      // Per-page sheet (the newsletter's "Connect with Sheet") wins; else the
-      // account-wide sheet set on the dashboard.
-      const hook = owner[0]?.page_hook || owner[0]?.user_hook;
+      const [pageRows] = await pool.query("SELECT sheet_webhook FROM pages WHERE id = ?", [page_id]);
+      const [globalRows] = await pool.query("SELECT value FROM settings WHERE key = 'global_sheet_webhook'");
+      const hook = pageRows[0]?.sheet_webhook || globalRows[0]?.value;
       if (hook) {
         fetch(hook, {
           method: "POST",

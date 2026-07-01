@@ -11,5 +11,7 @@ router.post("/users",               c.createUser);
 router.put("/users/:id",            c.updateUser);
 router.delete("/users/:id",         c.deleteUser);
 router.put("/users/:id/features",   c.toggleFeatures);
+router.get("/sheet",                c.getGlobalSheet);
+router.put("/sheet",                c.setGlobalSheet);
 
 module.exports = router;

@@ -63,3 +63,21 @@ exports.toggleFeatures = async (req, res) => {
     res.json({ message: "Features updated", features_enabled });
   } catch (err) { res.status(500).json({ message: err.message }); }
 };
+
+exports.getGlobalSheet = async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT value FROM settings WHERE key = 'global_sheet_webhook'");
+    res.json({ sheet_webhook: rows[0]?.value || "" });
+  } catch (err) { res.status(500).json({ message: err.message }); }
+};
+
+exports.setGlobalSheet = async (req, res) => {
+  try {
+    const url = (req.body.sheet_webhook || "").trim();
+    if (url && !/^https:\/\/script\.google\.com\//i.test(url)) {
+      return res.status(400).json({ message: "Enter a valid Google Apps Script Web App URL (https://script.google.com/...)" });
+    }
+    await pool.query("INSERT INTO settings (key, value) VALUES ('global_sheet_webhook', ?) ON CONFLICT(key) DO UPDATE SET value = ?", [url || null, url || null]);
+    res.json({ message: url ? "Google Sheet connected" : "Disconnected", sheet_webhook: url });
+  } catch (err) { res.status(500).json({ message: err.message }); }
+};

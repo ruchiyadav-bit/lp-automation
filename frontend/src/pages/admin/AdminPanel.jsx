@@ -20,15 +20,34 @@ export default function AdminPanel() {
   const [togglingId, setTogglingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [formError, setFormError]   = useState("");
+  const [sheetUrl, setSheetUrl]     = useState("");
+  const [sheetSaving, setSheetSaving] = useState(false);
+  const [sheetMsg, setSheetMsg]     = useState("");
 
   const load = async () => {
     setLoading(true);
     try {
-      const [u, s] = await Promise.all([api.get("/api/admin/users"), api.get("/api/admin/stats")]);
+      const [u, s, sh] = await Promise.all([
+        api.get("/api/admin/users"),
+        api.get("/api/admin/stats"),
+        api.get("/api/admin/sheet")
+      ]);
       setUsers(u.data); setStats(s.data);
+      setSheetUrl(sh.data.sheet_webhook || "");
     } finally { setLoading(false); }
   };
   useEffect(() => { load(); }, []);
+
+  const saveSheet = async (disconnect = false) => {
+    setSheetSaving(true); setSheetMsg("");
+    try {
+      const { data } = await api.put("/api/admin/sheet", { sheet_webhook: disconnect ? "" : sheetUrl });
+      if (disconnect) setSheetUrl("");
+      setSheetMsg(data.message || "Saved");
+    } catch (err) {
+      setSheetMsg(err.response?.data?.message || "Failed to save");
+    } finally { setSheetSaving(false); }
+  };
 
   const openAdd = () => { setFormData(emptyUser); setFormError(""); setModal({ mode: "add" }); };
   const openEdit = (u) => {
@@ -113,6 +132,33 @@ export default function AdminPanel() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Google Sheet (admin-only) */}
+      <div className="card mb-8">
+        <h2 className="font-semibold text-slate-800 mb-2">
+          <i className="fa-solid fa-table-list mr-2 text-green-600" />Google Sheet Integration
+        </h2>
+        <p className="text-sm text-slate-500 mb-3">
+          Set the Google Sheet URL here. All users will see this URL on their dashboard (read-only).
+          {sheetUrl
+            ? <span className="ml-1 text-green-600 font-medium"><i className="fa-solid fa-circle-check mr-1" />Connected</span>
+            : <span className="ml-1 text-slate-400">Not connected</span>}
+        </p>
+        <div className="flex gap-2 flex-wrap">
+          <input className="input text-sm flex-1 min-w-[260px]"
+            placeholder="https://script.google.com/macros/s/.../exec"
+            value={sheetUrl} onChange={e => setSheetUrl(e.target.value)} />
+          <button className="btn-primary text-sm" disabled={sheetSaving || !sheetUrl.trim()} onClick={() => saveSheet(false)}>
+            {sheetSaving ? <><i className="fa-solid fa-spinner fa-spin mr-1" />Saving…</> : <><i className="fa-solid fa-link mr-1" />Connect</>}
+          </button>
+          {sheetUrl && (
+            <button className="btn-secondary text-sm" disabled={sheetSaving} onClick={() => saveSheet(true)}>
+              <i className="fa-solid fa-link-slash mr-1" />Disconnect
+            </button>
+          )}
+        </div>
+        {sheetMsg && <p className="text-xs text-slate-500 mt-2">{sheetMsg}</p>}
       </div>
 
       {/* Users table */}

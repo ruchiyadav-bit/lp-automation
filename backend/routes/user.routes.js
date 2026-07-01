@@ -33,23 +33,11 @@ router.put("/me", authenticate, async (req, res) => {
   }
 });
 
-// GET /api/users/me/sheet — current Google Sheet webhook URL
+// GET /api/users/me/sheet — returns the global sheet URL set by admin (read-only for users)
 router.get("/me/sheet", authenticate, async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT sheet_webhook FROM users WHERE id = ?", [req.user.id]);
-    res.json({ sheet_webhook: rows[0]?.sheet_webhook || "" });
-  } catch (err) { res.status(500).json({ message: err.message }); }
-});
-
-// PUT /api/users/me/sheet — save / clear the Google Sheet webhook URL
-router.put("/me/sheet", authenticate, async (req, res) => {
-  try {
-    const url = (req.body.sheet_webhook || "").trim();
-    if (url && !/^https:\/\/script\.google\.com\//i.test(url)) {
-      return res.status(400).json({ message: "Enter a valid Google Apps Script Web App URL (https://script.google.com/...)" });
-    }
-    await pool.query("UPDATE users SET sheet_webhook = ? WHERE id = ?", [url || null, req.user.id]);
-    res.json({ message: url ? "Google Sheet connected" : "Disconnected", sheet_webhook: url });
+    const [rows] = await pool.query("SELECT value FROM settings WHERE key = 'global_sheet_webhook'");
+    res.json({ sheet_webhook: rows[0]?.value || "" });
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 

@@ -18,36 +18,20 @@ export default function Dashboard() {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(null);
-  // Google Sheet integration
-  const [sheetUrl, setSheetUrl]     = useState("");
-  const [sheetSaving, setSheetSaving] = useState(false);
-  const [sheetMsg, setSheetMsg]     = useState("");
-  const [showSheetHelp, setShowSheetHelp] = useState(false);
-
-  useEffect(() => {
-    api.get("/api/users/me/sheet").then(({ data }) => setSheetUrl(data.sheet_webhook || "")).catch(() => {});
-  }, []);
-
-  const saveSheet = async (disconnect = false) => {
-    setSheetSaving(true); setSheetMsg("");
-    try {
-      const { data } = await api.put("/api/users/me/sheet", { sheet_webhook: disconnect ? "" : sheetUrl });
-      if (disconnect) setSheetUrl("");
-      setSheetMsg(data.message || "Saved");
-    } catch (err) {
-      setSheetMsg(err.response?.data?.message || "Failed to save");
-    } finally { setSheetSaving(false); }
-  };
+  // Google Sheet integration (read-only, set by admin)
+  const [sheetUrl, setSheetUrl] = useState("");
 
   useEffect(() => {
     Promise.all([
       api.get("/api/pages"),
       api.get("/api/emails/stats"),
-      user?.role === "admin" ? api.get("/api/admin/stats") : Promise.resolve({ data: {} })
-    ]).then(([pRes, eRes, aRes]) => {
+      user?.role === "admin" ? api.get("/api/admin/stats") : Promise.resolve({ data: {} }),
+      api.get("/api/users/me/sheet")
+    ]).then(([pRes, eRes, aRes, shRes]) => {
       const totalEmails = eRes.data.reduce((a, p) => a + Number(p.email_count), 0);
       setStats({ pages: pRes.data.length, emails: totalEmails, users: aRes.data?.total_users ?? "—" });
       setPages(pRes.data);
+      setSheetUrl(shRes.data.sheet_webhook || "");
     }).finally(() => setLoading(false));
   }, [user]);
 
@@ -130,53 +114,28 @@ export default function Dashboard() {
         })}
       </div>
 
-      {/* Google Sheet integration */}
+      {/* Google Sheet integration (read-only) */}
       <h2 className="text-base font-semibold text-slate-700 mb-3">
-        <i className="fa-solid fa-table-list mr-2 text-green-600" />Connect to Google Sheet
+        <i className="fa-solid fa-table-list mr-2 text-green-600" />Google Sheet
       </h2>
       <div className="card mb-10">
-        <p className="text-sm text-slate-600 mb-3">
-          Send every captured email straight to a Google Sheet. Paste your Apps Script Web App URL below —
-          new subscribers will be appended automatically.
-          {sheetUrl
-            ? <span className="ml-1 text-green-600 font-medium"><i className="fa-solid fa-circle-check mr-1" />Connected</span>
-            : <span className="ml-1 text-slate-400">Not connected</span>}
-        </p>
-        <div className="flex gap-2 flex-wrap">
-          <input className="input text-sm flex-1 min-w-[260px]"
-            placeholder="https://script.google.com/macros/s/.../exec"
-            value={sheetUrl} onChange={e => setSheetUrl(e.target.value)} />
-          <button className="btn-primary text-sm" disabled={sheetSaving || !sheetUrl.trim()} onClick={() => saveSheet(false)}>
-            {sheetSaving ? <><i className="fa-solid fa-spinner fa-spin mr-1" />Saving…</> : <><i className="fa-solid fa-link mr-1" />Connect</>}
-          </button>
-          {sheetUrl && (
-            <button className="btn-secondary text-sm" disabled={sheetSaving} onClick={() => saveSheet(true)}>
-              <i className="fa-solid fa-link-slash mr-1" />Disconnect
-            </button>
-          )}
-        </div>
-        {sheetMsg && <p className="text-xs text-slate-500 mt-2">{sheetMsg}</p>}
-        <button className="text-xs text-indigo-600 hover:underline mt-3" onClick={() => setShowSheetHelp(s => !s)}>
-          <i className={`fa-solid fa-chevron-${showSheetHelp ? "up" : "down"} mr-1`} />How do I get the URL?
-        </button>
-        {showSheetHelp && (
-          <ol className="text-xs text-slate-500 mt-2 space-y-1 list-decimal pl-5">
-            <li>Open your Google Sheet → Extensions → Apps Script.</li>
-            <li>Paste this script and Save:
-              <pre className="bg-slate-900 text-green-300 rounded-md p-2 mt-1 overflow-auto text-[11px]">{`function doPost(e){
-  e = e || {};
-  var email = (e.parameter && e.parameter.email) || '';
-  var ts = (e.parameter && e.parameter.timestamp) || '';
-  if(!email && e.postData){
-    try{ var d=JSON.parse(e.postData.contents); email=d.email; ts=d.timestamp; }catch(err){}
-  }
-  SpreadsheetApp.getActiveSheet().appendRow([ts || new Date(), email]);
-  return ContentService.createTextOutput('ok');
-}`}</pre>
-            </li>
-            <li>Click <b>Deploy → New deployment → Web app</b>. Set "Who has access" to <b>Anyone</b>.</li>
-            <li>Copy the <b>Web app URL</b> (ends in <code>/exec</code>) and paste it above.</li>
-          </ol>
+        {sheetUrl ? (
+          <>
+            <p className="text-sm text-slate-600 mb-2">
+              <i className="fa-solid fa-circle-check mr-1 text-green-600" />
+              <span className="font-medium text-green-600">Connected</span> — All captured emails are sent to the linked Google Sheet.
+            </p>
+            <div className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-600 break-all select-all">
+              {sheetUrl}
+            </div>
+            <p className="text-xs text-slate-400 mt-2">
+              <i className="fa-solid fa-lock mr-1" />This URL is managed by the admin.
+            </p>
+          </>
+        ) : (
+          <p className="text-sm text-slate-400">
+            <i className="fa-solid fa-circle-xmark mr-1" />No Google Sheet connected. Contact admin to set up the integration.
+          </p>
         )}
       </div>
 
