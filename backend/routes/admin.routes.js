@@ -13,5 +13,7 @@ router.delete("/users/:id",         c.deleteUser);
 router.put("/users/:id/features",   c.toggleFeatures);
 router.get("/sheet",                c.getGlobalSheet);
 router.put("/sheet",                c.setGlobalSheet);
+router.get("/orphan-pages",         c.getOrphanPages);
+router.post("/recover-pages",       c.recoverPages);
 
 module.exports = router;

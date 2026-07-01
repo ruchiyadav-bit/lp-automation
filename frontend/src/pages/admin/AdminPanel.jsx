@@ -23,6 +23,10 @@ export default function AdminPanel() {
   const [sheetUrl, setSheetUrl]     = useState("");
   const [sheetSaving, setSheetSaving] = useState(false);
   const [sheetMsg, setSheetMsg]     = useState("");
+  const [orphans, setOrphans]       = useState([]);
+  const [recoverEmail, setRecoverEmail] = useState("");
+  const [recoverMsg, setRecoverMsg] = useState("");
+  const [recovering, setRecovering] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -34,6 +38,8 @@ export default function AdminPanel() {
       ]);
       setUsers(u.data); setStats(s.data);
       setSheetUrl(sh.data.sheet_webhook || "");
+      const orphanRes = await api.get("/api/admin/orphan-pages");
+      setOrphans(orphanRes.data);
     } finally { setLoading(false); }
   };
   useEffect(() => { load(); }, []);
@@ -47,6 +53,18 @@ export default function AdminPanel() {
     } catch (err) {
       setSheetMsg(err.response?.data?.message || "Failed to save");
     } finally { setSheetSaving(false); }
+  };
+
+  const recoverPages = async () => {
+    if (!recoverEmail.trim()) return;
+    setRecovering(true); setRecoverMsg("");
+    try {
+      const { data } = await api.post("/api/admin/recover-pages", { email: recoverEmail.trim() });
+      setRecoverMsg(data.message);
+      setOrphans([]);
+    } catch (err) {
+      setRecoverMsg(err.response?.data?.message || "Recovery failed");
+    } finally { setRecovering(false); }
   };
 
   const openAdd = () => { setFormData(emptyUser); setFormError(""); setModal({ mode: "add" }); };
@@ -160,6 +178,31 @@ export default function AdminPanel() {
         </div>
         {sheetMsg && <p className="text-xs text-slate-500 mt-2">{sheetMsg}</p>}
       </div>
+
+      {/* Recover orphan pages */}
+      {orphans.length > 0 && (
+        <div className="card mb-8 border-amber-200 bg-amber-50/50">
+          <h2 className="font-semibold text-slate-800 mb-2">
+            <i className="fa-solid fa-triangle-exclamation mr-2 text-amber-500" />Orphan Pages Found ({orphans.length})
+          </h2>
+          <p className="text-sm text-slate-600 mb-3">
+            These pages belong to a deleted user. Assign them to an existing user by entering their email below.
+          </p>
+          <div className="text-xs text-slate-500 mb-3 space-y-1">
+            {orphans.map(p => (
+              <div key={p.id}>Page #{p.id} — {p.type} — {p.domain || "no domain"} — {p.created_at}</div>
+            ))}
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            <input className="input text-sm flex-1 min-w-[220px]" placeholder="User email (e.g. vishal@launchigo.in)"
+              value={recoverEmail} onChange={e => setRecoverEmail(e.target.value)} />
+            <button className="btn-primary text-sm" disabled={recovering || !recoverEmail.trim()} onClick={recoverPages}>
+              {recovering ? <><i className="fa-solid fa-spinner fa-spin mr-1" />Recovering…</> : <><i className="fa-solid fa-rotate-left mr-1" />Recover Pages</>}
+            </button>
+          </div>
+          {recoverMsg && <p className="text-sm text-slate-600 mt-2 font-medium">{recoverMsg}</p>}
+        </div>
+      )}
 
       {/* Users table */}
       {loading ? (

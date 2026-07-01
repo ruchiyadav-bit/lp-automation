@@ -81,3 +81,21 @@ exports.setGlobalSheet = async (req, res) => {
     res.json({ message: url ? "Google Sheet connected" : "Disconnected", sheet_webhook: url });
   } catch (err) { res.status(500).json({ message: err.message }); }
 };
+
+exports.getOrphanPages = async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT id, user_id, type, domain, created_at FROM pages WHERE user_id NOT IN (SELECT id FROM users)");
+    res.json(rows);
+  } catch (err) { res.status(500).json({ message: err.message }); }
+};
+
+exports.recoverPages = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email is required" });
+    const [users] = await pool.query("SELECT id FROM users WHERE email = ?", [email]);
+    if (!users.length) return res.status(404).json({ message: "User not found. Create the user first, then recover." });
+    const [result] = await pool.query("UPDATE pages SET user_id = ? WHERE user_id NOT IN (SELECT id FROM users)", [users[0].id]);
+    res.json({ message: `${result.affectedRows} pages recovered and assigned to ${email}` });
+  } catch (err) { res.status(500).json({ message: err.message }); }
+};
