@@ -46,7 +46,7 @@ const DEFAULT_HEADLINE = "We Use Cookie";
 const DEFAULT_BODY = `To improve your browsing experience and analyze site traffic, we use cookies. By clicking "Accept", you consent to our use of cookies. You can decline if you prefer limited functionality.`;
 
 const empty = {
-  domain: "", privacyUrl: "/privacy", acceptUrl: "", declineUrl: "",
+  domain: "", privacyUrl: "/privacy", acceptUrl: "", declineUrl: "", closeUrl: "",
   bgType: "color", bgColor: "", bgImage: "", bgOpacity: 0.6,
   advancedEnabled: false, headingColor: "", subColor: "", boxColor: "",
   fontSize: "", fontWeight: "", format: "normal",
@@ -280,16 +280,9 @@ export default function CookiePage() {
             </div>
 
             <button className="btn-primary"
-              disabled={!form.domain.trim() || lpLoading || (desktopLP && (!lpDomain.trim() || !lpIndustry.trim()))}
-              onClick={async () => {
-                if (desktopLP && !blogLP && lpDomain.trim() && lpIndustry.trim()) {
-                  await generateLanding();
-                }
-                setStep(1);
-              }}>
-              {lpLoading
-                ? <><i className="fa-solid fa-spinner fa-spin mr-2" />Generating landing page…</>
-                : <>Continue <i className="fa-solid fa-arrow-right ml-2" /></>}
+              disabled={!form.domain.trim() || lpLoading || (desktopLP && (!lpDomain.trim() || !lpIndustry.trim() || !blogLP))}
+              onClick={() => setStep(1)}>
+              Continue <i className="fa-solid fa-arrow-right ml-2" />
             </button>
           </div>
         </div>
@@ -462,13 +455,22 @@ export default function CookiePage() {
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">Accept Button URL</label>
                   <input className="input text-sm" placeholder="optional" value={form.acceptUrl}
-                    onChange={e => setForm({ ...form, acceptUrl: e.target.value })} />
+                    onChange={e => {
+                      const url = e.target.value;
+                      setForm(f => ({ ...f, acceptUrl: url, closeUrl: f.closeUrl || url }));
+                    }} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">Decline Button URL</label>
                   <input className="input text-sm" placeholder="optional" value={form.declineUrl}
                     onChange={e => setForm({ ...form, declineUrl: e.target.value })} />
                 </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Close (✕) Button URL</label>
+                <input className="input text-sm" placeholder="auto-filled from Accept URL" value={form.closeUrl}
+                  onChange={e => setForm({ ...form, closeUrl: e.target.value })} />
+                <p className="text-xs text-slate-400 mt-1">Where the ✕ close button redirects. Auto-filled from Accept URL.</p>
               </div>
 
               {/* Advanced — Background & Styling */}

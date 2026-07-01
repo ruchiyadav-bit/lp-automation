@@ -323,16 +323,9 @@ export default function AgeVerification() {
             </div>
 
             <button className="btn-primary"
-              disabled={!form.domain.trim() || lpLoading || (desktopLP && (!lpDomain.trim() || !lpIndustry.trim()))}
-              onClick={async () => {
-                if (desktopLP && !blogLP && lpDomain.trim() && lpIndustry.trim()) {
-                  await generateLanding();
-                }
-                setStep(1);
-              }}>
-              {lpLoading
-                ? <><i className="fa-solid fa-spinner fa-spin mr-2" />Generating landing page…</>
-                : <>Continue <i className="fa-solid fa-arrow-right ml-2" /></>}
+              disabled={!form.domain.trim() || lpLoading || (desktopLP && (!lpDomain.trim() || !lpIndustry.trim() || !blogLP))}
+              onClick={() => setStep(1)}>
+              Continue <i className="fa-solid fa-arrow-right ml-2" />
             </button>
           </div>
         </div>

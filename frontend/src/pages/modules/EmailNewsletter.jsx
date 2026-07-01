@@ -5,7 +5,7 @@ import { EMAIL_TEMPLATES, generateDesktopLPPage, applyNewsletterAdvancedStyles }
 import { downloadAsZip } from "../../utils/zipHelper";
 
 const STEPS = ["Details", "Design", "Edit Content", "Preview & Save"];
-const emptyContent = { headline: "", bodyCopy: "", ctaText: "Subscribe", redirectUrl: "" };
+const emptyContent = { headline: "", bodyCopy: "", ctaText: "Subscribe", redirectUrl: "", closeUrl: "" };
 
 const defaultContent = (domain = "", topic = "") => ({
   headline: `Subscribe to ${domain || "our"} newsletter`,
@@ -107,7 +107,7 @@ export default function EmailNewsletter() {
   const emailHtml = useMemo(() => {
     if (!template || !content.headline) return "";
     const tmpl = EMAIL_TEMPLATES.find(t => t.id === template);
-    const html = tmpl ? tmpl.generate({ ...form, ...content, actionUrl: connectSheet ? sheetWebhook.trim() : "" }) : "";
+    const html = tmpl ? tmpl.generate({ ...form, ...content, actionUrl: connectSheet ? sheetWebhook.trim() : "", closeUrl: content.closeUrl || "" }) : "";
     if (!html) return "";
     return applyNewsletterAdvancedStyles(html, {
       enabled: form.advancedEnabled,
@@ -327,12 +327,9 @@ export default function EmailNewsletter() {
             </div>
 
             <button className="btn-primary"
-              disabled={!form.domain.trim() || !form.topic.trim() || lpLoading || (desktopLP && (!lpDomain.trim() || !lpIndustry.trim()))}
-              onClick={async () => {
-                if (desktopLP && !blogLP && lpDomain.trim() && lpIndustry.trim()) await generateLanding();
-                setStep(1);
-              }}>
-              {lpLoading ? <><i className="fa-solid fa-spinner fa-spin mr-2" />Preparing…</> : <>Continue <i className="fa-solid fa-arrow-right ml-2" /></>}
+              disabled={!form.domain.trim() || !form.topic.trim() || lpLoading || (desktopLP && (!lpDomain.trim() || !lpIndustry.trim() || !blogLP))}
+              onClick={() => setStep(1)}>
+              Continue <i className="fa-solid fa-arrow-right ml-2" />
             </button>
           </div>
         </div>
@@ -445,6 +442,11 @@ export default function EmailNewsletter() {
                 <label className="block text-xs font-medium text-slate-600 mb-1">Redirect after subscribe (URL)</label>
                 <input className="input text-sm" placeholder="blank = show a thank-you message" value={content.redirectUrl || ""}
                   onChange={e => setContent({ ...content, redirectUrl: e.target.value })} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Close (✕) Button URL</label>
+                <input className="input text-sm" placeholder="optional — where ✕ redirects" value={content.closeUrl || ""}
+                  onChange={e => setContent({ ...content, closeUrl: e.target.value })} />
               </div>
 
               {/* Popup image */}

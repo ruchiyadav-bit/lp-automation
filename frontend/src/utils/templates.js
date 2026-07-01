@@ -66,25 +66,28 @@ export function extractCookieFields(html = "") {
   const decline = html.match(/class="[^"]*\bbtn-decline\b[^"]*"[^>]*>([^<]*)<\/button>/);
   const acceptUrl = html.match(/function accept\(\)\{[^}]*var u='([^']*)'/);
   const declineUrl = html.match(/function decline\(\)\{[^}]*var u='([^']*)'/);
+  const closeUrl = html.match(/function closeModal\(\)\{[^}]*var u='([^']*)'/);
   return {
     headline: h1 ? stripTags(h1[1]) : "",
     bodyCopy: p ? stripTags(p[1]) : "",
     acceptText: accept ? accept[1].trim() : "",
     declineText: decline ? decline[1].trim() : "",
     acceptUrl: acceptUrl ? acceptUrl[1] : "",
-    declineUrl: declineUrl ? declineUrl[1] : ""
+    declineUrl: declineUrl ? declineUrl[1] : "",
+    closeUrl: closeUrl ? closeUrl[1] : ""
   };
 }
 
 export function applyCookieFields(html = "", fields = {}) {
   let out = html;
-  const { headline, bodyCopy, acceptText, declineText, acceptUrl, declineUrl } = fields;
+  const { headline, bodyCopy, acceptText, declineText, acceptUrl, declineUrl, closeUrl } = fields;
   if (headline !== undefined) out = out.replace(/(<h1[^>]*>)([\s\S]*?)(<\/h1>)/, (m, a, b, c) => `${a}${escapeHtml(headline)}${c}`);
   if (bodyCopy !== undefined) out = out.replace(/(<p[^>]*>)([\s\S]*?)(<\/p>)/, (m, a, b, c) => `${a}${escapeHtml(bodyCopy)}${c}`);
   if (acceptText !== undefined) out = out.replace(/(class="[^"]*\bbtn-accept\b[^"]*"[^>]*>)([^<]*)(<\/button>)/, (m, a, b, c) => `${a}${escapeHtml(acceptText)}${c}`);
   if (declineText !== undefined) out = out.replace(/(class="[^"]*\bbtn-decline\b[^"]*"[^>]*>)([^<]*)(<\/button>)/, (m, a, b, c) => `${a}${escapeHtml(declineText)}${c}`);
   if (acceptUrl !== undefined) out = out.replace(/(function accept\(\)\{[^}]*var u=')([^']*)(')/, (m, a, b, c) => `${a}${acceptUrl}${c}`);
   if (declineUrl !== undefined) out = out.replace(/(function decline\(\)\{[^}]*var u=')([^']*)(')/, (m, a, b, c) => `${a}${declineUrl}${c}`);
+  if (closeUrl !== undefined) out = out.replace(/(function closeModal\(\)\{[^}]*var u=')([^']*)(')/, (m, a, b, c) => `${a}${closeUrl}${c}`);
   return out;
 }
 
@@ -112,7 +115,7 @@ export const COOKIE_TEMPLATES = [
     preview: { bg: "#f5f0e8", accent: "#c97e33" },
     generate: (p) => {
       const { headline = DEFAULT_COOKIE_HEADLINE, bodyCopy = DEFAULT_COOKIE_BODY, domain = "",
-              acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "" } = p;
+              acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "", closeUrl = "" } = p;
       const overlayBg = cookieOverlayBg(p, "rgba(40,30,20,.45)");
       return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -139,7 +142,7 @@ p{font-size:14px;color:#8a7259;line-height:1.75;margin-bottom:30px;max-width:360
 <div id="overlay">
   <div id="modal">
     <span class="sparkle s1">✦</span><span class="sparkle s2">✦</span><span class="sparkle s3">✦</span><span class="sparkle s4">✦</span>
-    <button class="close">✕</button>
+    <button class="close" onclick="closeModal()">✕</button>
     <div class="cb-icon">${COOKIE_SVG}</div>
     <h1>${headline}</h1>
     <p>${bodyCopy}</p>
@@ -152,6 +155,7 @@ p{font-size:14px;color:#8a7259;line-height:1.75;margin-bottom:30px;max-width:360
 <script>
 function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -164,7 +168,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
     preview: { bg: "#0f172a", accent: "#6366f1" },
     generate: (p) => {
       const { headline = DEFAULT_COOKIE_HEADLINE, bodyCopy = DEFAULT_COOKIE_BODY, domain = "",
-              acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "" } = p;
+              acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "", closeUrl = "" } = p;
       const overlayBg = cookieOverlayBg(p, "rgba(15,23,42,.85)");
       return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -187,7 +191,7 @@ p{font-size:14px;color:#94a3b8;line-height:1.75;margin-bottom:28px}
 <div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#94a3b8">Your website content here</div>
 <div id="overlay">
   <div id="modal">
-    <button class="close">✕</button>
+    <button class="close" onclick="closeModal()">✕</button>
     <div class="badge">🍪</div>
     <h1>${headline}</h1>
     <p>${bodyCopy}</p>
@@ -198,6 +202,7 @@ p{font-size:14px;color:#94a3b8;line-height:1.75;margin-bottom:28px}
 <script>
 function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -210,7 +215,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
     preview: { bg: "#ffffff", accent: "#1e293b" },
     generate: (p) => {
       const { headline = DEFAULT_COOKIE_HEADLINE, bodyCopy = DEFAULT_COOKIE_BODY, domain = "",
-              acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "" } = p;
+              acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "", closeUrl = "" } = p;
       const overlayBg = cookieOverlayBg(p, "rgba(15,23,42,.55)");
       return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -234,7 +239,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
 <div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#94a3b8">Your website content here</div>
 <div id="overlay">
   <div id="modal">
-    <button class="close">✕</button>
+    <button class="close" onclick="closeModal()">✕</button>
     <div class="cb-icon">🍪</div>
     <div class="content">
       <h1>${headline}</h1>
@@ -249,6 +254,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
 <script>
 function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -261,7 +267,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
     preview: { bg: "#64748b", accent: "#0f172a" },
     generate: (p) => {
       const { headline = DEFAULT_COOKIE_HEADLINE, bodyCopy = DEFAULT_COOKIE_BODY, domain = "",
-              acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "" } = p;
+              acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "", closeUrl = "" } = p;
       const overlayBg = cookieOverlayBg(p, "#64748b");
       return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -285,7 +291,7 @@ p{font-size:14px;color:#57534e;line-height:1.75;margin-bottom:30px}
 <div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#94a3b8">Your website content here</div>
 <div id="overlay">
   <div id="modal">
-    <button class="close">✕</button>
+    <button class="close" onclick="closeModal()">✕</button>
     <div class="badge">🍪</div>
     <h1>${headline}</h1>
     <p>${bodyCopy}</p>
@@ -298,6 +304,7 @@ p{font-size:14px;color:#57534e;line-height:1.75;margin-bottom:30px}
 <script>
 function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -310,7 +317,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
     preview: { bg: "#f8fafc", accent: "#1e293b" },
     generate: (p) => {
       const { headline = DEFAULT_COOKIE_HEADLINE, bodyCopy = DEFAULT_COOKIE_BODY, domain = "",
-              acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "" } = p;
+              acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "", closeUrl = "" } = p;
       const overlayBg = cookieOverlayBg(p, "rgba(15,23,42,.6)");
       return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -333,7 +340,7 @@ p{font-size:14px;color:#64748b;line-height:1.75;margin-bottom:28px}
 <div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#94a3b8">Your website content here</div>
 <div id="overlay">
   <div id="modal">
-    <button class="close">✕</button>
+    <button class="close" onclick="closeModal()">✕</button>
     <div class="badge">🍪</div>
     <h1>${headline}</h1>
     <p>${bodyCopy}</p>
@@ -344,6 +351,7 @@ p{font-size:14px;color:#64748b;line-height:1.75;margin-bottom:28px}
 <script>
 function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -358,7 +366,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
       const { headline = "Heya! This site uses cookies.",
               bodyCopy = "Cookies allow the website publisher to do useful things like find out whether the computer (and probably its user) has visited the site before.",
               domain = "", acceptText = "Sweet… cookies!", declineText = "Sorry, I'm not a fan. No cookies for me.",
-              acceptUrl = "", declineUrl = "" } = p;
+              acceptUrl = "", declineUrl = "", closeUrl = "" } = p;
       const overlayBg = cookieOverlayBg(p, "radial-gradient(circle at 30% 20%,#4a9fe0,#1f5fa8)");
       return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -384,7 +392,7 @@ p{font-size:13.5px;color:#94a3b8;line-height:1.7;margin-bottom:24px}
 <div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#94a3b8">Your website content here</div>
 <div id="overlay">
   <div id="modal">
-    <button class="close">✕</button>
+    <button class="close" onclick="closeModal()">✕</button>
     <div class="bubble">🍪</div>
     <h1>${headline}</h1>
     <p>${bodyCopy}</p>
@@ -395,6 +403,7 @@ p{font-size:13.5px;color:#94a3b8;line-height:1.7;margin-bottom:24px}
 <script>
 function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -407,7 +416,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
     preview: { bg: "#ffffff", accent: "#1c1917" },
     generate: (p) => {
       const { headline = "Cookies", bodyCopy = DEFAULT_COOKIE_BODY, domain = "",
-              acceptText = "Accept", declineText = "Preferences", acceptUrl = "", declineUrl = "" } = p;
+              acceptText = "Accept", declineText = "Preferences", acceptUrl = "", declineUrl = "", closeUrl = "" } = p;
       const overlayBg = cookieOverlayBg(p, "rgba(15,23,42,.55)");
       return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -429,7 +438,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
 <div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#94a3b8">Your website content here</div>
 <div id="overlay">
   <div id="modal">
-    <button class="close">✕</button>
+    <button class="close" onclick="closeModal()">✕</button>
     <div class="content">
       <h1>${headline}</h1>
       <p>${bodyCopy}</p>
@@ -443,6 +452,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
 <script>
 function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -456,7 +466,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
     generate: (p) => {
       const { headline = "We value your privacy",
               bodyCopy = `We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.`,
-              domain = "", acceptText = "Accept All", declineText = "Reject All", acceptUrl = "", declineUrl = "" } = p;
+              domain = "", acceptText = "Accept All", declineText = "Reject All", acceptUrl = "", declineUrl = "", closeUrl = "" } = p;
       const overlayBg = cookieOverlayBg(p, "repeating-linear-gradient(135deg,#6b7560,#6b7560 16px,#5e6754 16px,#5e6754 32px)");
       return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -482,7 +492,7 @@ p{font-size:12.5px;color:#64748b;line-height:1.6;margin-bottom:18px}
     <h1>${headline}</h1>
     <p>${bodyCopy}</p>
     <div class="btns">
-      <button class="btn btn-customize" onclick="decline()">Customize</button>
+      <button class="btn btn-customize" onclick="accept()">Customize</button>
       <button class="btn btn-decline" onclick="decline()">${declineText}</button>
       <button class="btn btn-accept" onclick="accept()">${acceptText}</button>
     </div>
@@ -491,6 +501,7 @@ p{font-size:12.5px;color:#64748b;line-height:1.6;margin-bottom:18px}
 <script>
 function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -504,7 +515,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
     generate: (p) => {
       const { headline = "Privacy Settings",
               bodyCopy = "To improve the user experience, to measure our success and to provide personalized advertising, we use cookies, pixels, tags and similar technologies.",
-              domain = "Your Brand", acceptText = "Accept All", declineText = "Deny", acceptUrl = "", declineUrl = "", privacyUrl = "/privacy" } = p;
+              domain = "Your Brand", acceptText = "Accept All", declineText = "Deny", acceptUrl = "", declineUrl = "", closeUrl = "", privacyUrl = "/privacy" } = p;
       const overlayBg = cookieOverlayBg(p, "rgba(15,23,42,.6)");
       return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -537,7 +548,7 @@ p a{color:#2563eb;text-decoration:underline}
     <p>${bodyCopy} You can find further information in our <a href="${privacyUrl}">data protection declaration</a>, where you can also adjust your settings at any time.</p>
     <div class="footlinks"><a href="${privacyUrl}">Privacy Policy</a><a href="#">Imprint</a></div>
     <div class="btns">
-      <button class="btn btn-individual" onclick="decline()">Individual Settings</button>
+      <button class="btn btn-individual" onclick="accept()">Individual Settings</button>
       <button class="btn btn-decline" onclick="decline()">${declineText}</button>
       <button class="btn btn-accept" onclick="accept()">${acceptText}</button>
     </div>
@@ -546,6 +557,7 @@ p a{color:#2563eb;text-decoration:underline}
 <script>
 function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -559,7 +571,7 @@ function decline(){localStorage.setItem('cookie_consent','declined');var u='${de
     generate: (p) => {
       const { headline = DEFAULT_COOKIE_HEADLINE,
               bodyCopy = `We use cookies to give you the best possible experience with ${p.domain || "this site"}. Some are essential for this site to function; others help us understand how you use the site, so we can improve it.`,
-              domain = "", acceptText = "Accept All Cookies", declineText = "Manage my preferences", acceptUrl = "", declineUrl = "", privacyUrl = "/privacy" } = p;
+              domain = "", acceptText = "Accept All Cookies", declineText = "Manage my preferences", acceptUrl = "", declineUrl = "", closeUrl = "", privacyUrl = "/privacy" } = p;
       const overlayBg = cookieOverlayBg(p, "rgba(15,23,42,.5)");
       return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -592,6 +604,7 @@ p a{color:#2563eb;text-decoration:underline}
 <script>
 function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
     }
@@ -619,7 +632,7 @@ const AI_ANIMATIONS = {
 export function generateAIDesign(p) {
   const {
     headline = DEFAULT_COOKIE_HEADLINE, bodyCopy = DEFAULT_COOKIE_BODY, domain = "",
-    acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "",
+    acceptText = "Accept", declineText = "Decline", acceptUrl = "", declineUrl = "", closeUrl = "",
     icon = "sparkles", accentColor = "#6366f1", animation = "fade-scale"
   } = p;
   const overlayBg = cookieOverlayBg(p, "rgba(15,23,42,.6)");
@@ -649,7 +662,7 @@ p{font-size:14px;color:#64748b;line-height:1.7;margin-bottom:26px}
 <div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#94a3b8">Your website content here</div>
 <div id="overlay">
   <div id="modal">
-    <button class="close"><i class="fa-solid fa-xmark"></i></button>
+    <button class="close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
     <div class="badge"><i class="${iconClass}"></i></div>
     <h1>${headline}</h1>
     <p>${bodyCopy}</p>
@@ -660,6 +673,7 @@ p{font-size:14px;color:#64748b;line-height:1.7;margin-bottom:26px}
 <script>
 function accept(){localStorage.setItem('cookie_consent','accepted');var u='${acceptUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 function decline(){localStorage.setItem('cookie_consent','declined');var u='${declineUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
+function closeModal(){var u='${closeUrl}';if(u){window.location.href=u}else{document.getElementById('overlay').remove()}}
 </script>
 </body></html>`;
 }
@@ -957,12 +971,12 @@ function nlOverlayBg({ bgType, bgColor, bgImage, bgOpacity = 0.6 }, fallback) {
 }
 
 // Shared form behaviour: close, skip, and submit (POST to webhook / redirect).
-function nlScript(actionUrl, redirectUrl) {
+function nlScript(actionUrl, redirectUrl, closeUrl) {
   return `<script>(function(){
-  var RD=${JSON.stringify(redirectUrl || "")},AU=${JSON.stringify(actionUrl || "")};
+  var RD=${JSON.stringify(redirectUrl || "")},AU=${JSON.stringify(actionUrl || "")},CL=${JSON.stringify(closeUrl || "")};
   var ov=document.getElementById('nl-overlay'),box=document.getElementById('nl-box'),x=document.getElementById('nl-close'),sk=document.getElementById('nl-skip'),f=document.getElementById('nl-form');
   function hide(){if(ov)ov.style.display='none';}
-  if(x)x.addEventListener('click',hide);
+  if(x)x.addEventListener('click',function(){if(CL){window.location.href=CL;}else{hide();}});
   if(sk)sk.addEventListener('click',hide);
   if(f)f.addEventListener('submit',function(e){e.preventDefault();var inp=f.querySelector('input[type=email],input[type=tel]'),em=inp?inp.value:'';
     function done(){if(RD){window.location.href=RD;return;}if(box){box.innerHTML='';var w=document.createElement('div');w.setAttribute('style','padding:46px 32px;text-align:center');w.innerHTML='<div style="font-size:46px;color:#22c55e;margin-bottom:10px">&#10003;</div>';var h=document.createElement('h2');h.setAttribute('style','font-family:Poppins,sans-serif;margin:0 0 8px');h.textContent='Thank you!';var p=document.createElement('p');p.setAttribute('style','color:#64748b;margin:0');p.textContent='You are subscribed.';w.appendChild(h);w.appendChild(p);box.appendChild(w);}}
@@ -1008,7 +1022,7 @@ export const EMAIL_TEMPLATES = [
     preview: { bg: "#f5f0e8", accent: "#b9885f" },
     generate: (p) => {
       const { headline = "Upgrade to Free Shipping + 10% Off", bodyCopy = "Sign up with your email to unlock the offer.",
-              ctaText = "Get Offer", placeholder = "Email address", image, actionUrl = "", redirectUrl = "", domain = "" } = p;
+              ctaText = "Get Offer", placeholder = "Email address", image, actionUrl = "", redirectUrl = "", closeUrl = "", domain = "" } = p;
       const bg = nlOverlayBg(p, "rgba(15,23,42,.45)"); const img = image || NL_DEFAULTS.image;
       return `<!DOCTYPE html><html lang="en"><head>${NL_HEAD(headline, domain)}
 <style>${NL_BASE}
@@ -1043,7 +1057,7 @@ export const EMAIL_TEMPLATES = [
     </div>
   </div>
 </div>
-${nlScript(actionUrl, redirectUrl)}
+${nlScript(actionUrl, redirectUrl, closeUrl)}
 </body></html>`;
     }
   },
@@ -1055,7 +1069,7 @@ ${nlScript(actionUrl, redirectUrl)}
     preview: { bg: "#111827", accent: "#2563eb" },
     generate: (p) => {
       const { headline = "Get 7% Discount", bodyCopy = "Subscribe to our newsletter and get a discount on your first purchase.",
-              ctaText = "Subscribe", placeholder = "Your e-mail", actionUrl = "", redirectUrl = "", domain = "" } = p;
+              ctaText = "Subscribe", placeholder = "Your e-mail", actionUrl = "", redirectUrl = "", closeUrl = "", domain = "" } = p;
       const bg = nlOverlayBg(p, "rgba(17,24,39,.85)");
       return `<!DOCTYPE html><html lang="en"><head>${NL_HEAD(headline, domain)}
 <style>${NL_BASE}
@@ -1079,7 +1093,7 @@ ${nlScript(actionUrl, redirectUrl)}
     </form>
   </div>
 </div>
-${nlScript(actionUrl, redirectUrl)}
+${nlScript(actionUrl, redirectUrl, closeUrl)}
 </body></html>`;
     }
   },
@@ -1091,7 +1105,7 @@ ${nlScript(actionUrl, redirectUrl)}
     preview: { bg: "#d97032", accent: "#ffffff" },
     generate: (p) => {
       const { headline = "Subscribe to our newsletter", bodyCopy = "Updates on our latest collections.",
-              ctaText = "Sign me up", placeholder = "Email address", image, actionUrl = "", redirectUrl = "", domain = "" } = p;
+              ctaText = "Sign me up", placeholder = "Email address", image, actionUrl = "", redirectUrl = "", closeUrl = "", domain = "" } = p;
       const bg = nlOverlayBg(p, "rgba(15,23,42,.5)"); const img = image || NL_DEFAULTS.image;
       return `<!DOCTYPE html><html lang="en"><head>${NL_HEAD(headline, domain)}
 <style>${NL_BASE}
@@ -1127,7 +1141,7 @@ ${nlScript(actionUrl, redirectUrl)}
     </div>
   </div>
 </div>
-${nlScript(actionUrl, redirectUrl)}
+${nlScript(actionUrl, redirectUrl, closeUrl)}
 </body></html>`;
     }
   },
@@ -1139,7 +1153,7 @@ ${nlScript(actionUrl, redirectUrl)}
     preview: { bg: "#1d4ed8", accent: "#2563eb" },
     generate: (p) => {
       const { headline = "Subscribe to our newsletter", bodyCopy = "Sign up and receive exclusive discounts and promotions.",
-              ctaText = "Subscribe", placeholder = "Your email address", actionUrl = "", redirectUrl = "", domain = "" } = p;
+              ctaText = "Subscribe", placeholder = "Your email address", actionUrl = "", redirectUrl = "", closeUrl = "", domain = "" } = p;
       const bg = nlOverlayBg(p, "radial-gradient(circle at 30% 20%,#3b82f6,#1e3a8a)");
       return `<!DOCTYPE html><html lang="en"><head>${NL_HEAD(headline, domain)}
 <style>${NL_BASE}
@@ -1164,7 +1178,7 @@ ${nlScript(actionUrl, redirectUrl)}
     </form>
   </div>
 </div>
-${nlScript(actionUrl, redirectUrl)}
+${nlScript(actionUrl, redirectUrl, closeUrl)}
 </body></html>`;
     }
   },
@@ -1176,7 +1190,7 @@ ${nlScript(actionUrl, redirectUrl)}
     preview: { bg: "#3f6212", accent: "#bef264" },
     generate: (p) => {
       const { headline = "Get 16 Free Meals", bodyCopy = "Don't miss out — plus free shipping on your first box.",
-              ctaText = "Claim Offer", placeholder = "Your email address", actionUrl = "", redirectUrl = "", domain = "" } = p;
+              ctaText = "Claim Offer", placeholder = "Your email address", actionUrl = "", redirectUrl = "", closeUrl = "", domain = "" } = p;
       const bg = nlOverlayBg(p, "rgba(20,40,10,.55)");
       return `<!DOCTYPE html><html lang="en"><head>${NL_HEAD(headline, domain)}
 <style>${NL_BASE}
@@ -1204,7 +1218,7 @@ ${nlScript(actionUrl, redirectUrl)}
     <button id="nl-skip" class="nl-skip" type="button">Continue without offer</button>
   </div>
 </div>
-${nlScript(actionUrl, redirectUrl)}
+${nlScript(actionUrl, redirectUrl, closeUrl)}
 </body></html>`;
     }
   }
